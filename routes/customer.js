@@ -15,6 +15,7 @@ router.get("/Customerlist", async (req, res) => {
 });
 
 // api/Customer/Customerdetail
+//test
 router.get("/Customerdetail", async (req, res) => {
   if (req.query.customer_id) {
     try {
