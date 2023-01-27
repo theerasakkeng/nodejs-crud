@@ -4,8 +4,8 @@ const customerInfo = require("../models/customerModel");
 
 const { generateID } = require("../helper/utility");
 
-//GetCustomerInfo
-router.get("/CustomerInfo", async (req, res) => {
+//GetCustomerList
+router.get("/Customerlist", async (req, res) => {
   try {
     const customer = await customerInfo.find();
     res.status(200).json({ status: "success", data: customer });
@@ -14,10 +14,20 @@ router.get("/CustomerInfo", async (req, res) => {
   }
 });
 
+//GetCustomerDetail
+router.get("/Customerdetail", async (req, res) => {
+  try {
+    const customer = await customerInfo.find({ customer_id: req.query.customer_id });
+    res.status(200).json({ status: "success", data: customer });
+  } catch (err) {
+    res.status(405).json({ message: err });
+  }
+});
+
 //InsertCustomerInfo
-router.post("/CustomerInsert", async (req, res) => {
+router.post("/Customerinsert", async (req, res) => {
   const customer = new customerInfo({
-    id: generateID(),
+    customer_id: generateID(),
     first_name: req.body.first_name,
     last_name: req.body.last_name,
   });

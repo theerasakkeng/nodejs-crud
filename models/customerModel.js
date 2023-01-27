@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const customerInfoSchema = new mongoose.Schema(
   {
-    id: {
+    customer_id: {
       type: String,
       unique: true,
     },
@@ -18,7 +18,6 @@ const customerInfoSchema = new mongoose.Schema(
   {
     versionKey: false,
     collection: "customerInfo",
-    id: false
   }
 );
 
