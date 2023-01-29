@@ -17,6 +17,10 @@ router.post("/CustomerInsert", async (req, res) => {
   const customer = new customerInfo({
     first_name: req.body.first_name,
     last_name: req.body.last_name,
+    address: {
+      address_info: req.body.address.address_info,
+      sub_district: req.body.address.sub_district,
+    },
   });
   try {
     const saveCustomer = await customer.save();
