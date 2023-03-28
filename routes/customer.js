@@ -1,21 +1,35 @@
 const express = require("express");
+const moment = require("moment");
+const jwt = require("jsonwebtoken");
 const router = express.Router();
 const customerInfo = require("../models/customerModel");
 
 const { generateID } = require("../helper/utility");
+const { jwtTokenValidate } = require("../helper/jwt");
 
 // api/Customer/Customerlist
-router.get("/Customerlist", async (req, res) => {
+router.get("/Customerlist", jwtTokenValidate, async (req, res) => {
   try {
     const customer = await customerInfo.find();
-    res.status(200).json({ status: "success", data: customer });
+    let customer_res = [];
+    customer.forEach((o) => {
+      let data = {
+        first_name: o.first_name,
+        last_name: o.last_name,
+        email: o.email,
+        mobile_no: o.mobile_no,
+        created_date: moment(o.created_date).format(),
+        update_date: moment(o.update_date).format(),
+      };
+      customer_res.push(data);
+    });
+    res.status(200).json({ status: "success", data: customer_res });
   } catch (err) {
     res.status(405).json({ message: err });
   }
 });
 
 // api/Customer/Customerdetail
-//test
 router.get("/Customerdetail", async (req, res) => {
   if (req.query.customer_id) {
     try {
@@ -28,25 +42,6 @@ router.get("/Customerdetail", async (req, res) => {
     }
   } else {
     res.status(405).json({ message: "err" });
-  }
-});
-
-// api/Customer/Customerinsert
-router.post("/Customerinsert", async (req, res) => {
-  const customer = new customerInfo({
-    customer_id: generateID(),
-    first_name: req.body.first_name,
-    last_name: req.body.last_name,
-    address: {
-      address_info: req.body.address.address_info,
-      sub_district: req.body.address.sub_district,
-    },
-  });
-  try {
-    const saveCustomer = await customer.save();
-    res.status(200).json({ status: "success", data: saveCustomer });
-  } catch (error) {
-    res.status(405).json({ message: error });
   }
 });
 

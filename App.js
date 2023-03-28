@@ -27,6 +27,10 @@ app.get("/", (req, res) => {
 const customerRoute = require("./routes/customer");
 app.use("/api/Customer", customerRoute);
 
+//Routes authen
+const authenRoute = require("./routes/authen");
+app.use("/api/Authen", authenRoute);
+
 mongoose.set("strictQuery", true);
 mongoose.connect(DB_CONNECTION_URL, { useNewUrlParser: true }, async () => {
   try {
