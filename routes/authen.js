@@ -88,12 +88,14 @@ router.post("/Login", async (req, res) => {
             { customer_id: cus_id },
             {
               refresh_token: refresh_token,
+              update_date: new Date(),
             }
           );
         } else {
           const refreshtoken_log_insert = new refreshTokenLog({
             customer_id: cus_id,
             refresh_token: refresh_token,
+            update_date: new Date(),
           });
           await refreshtoken_log_insert.save();
         }
