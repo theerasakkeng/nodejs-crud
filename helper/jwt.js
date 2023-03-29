@@ -22,17 +22,13 @@ const jwtRefreshTokenValidate = (req, res, next) => {
   try {
     if (!req.headers["authorization"]) return res.sendStatus(401);
     const refresh_token = req.headers["authorization"].replace("Bearer ", "");
-
-    jwt.verify(refreshtoken, REFRESH_TOKEN_SECRET, (err, decoded) => {
-        console.log(decoded);
-        console.log(req.user);
-        console.log(err);
+    jwt.verify(refresh_token, REFRESH_TOKEN_SECRET, (err, decoded) => {
       if (err) throw new Error(error);
 
       req.user = decoded;
       req.user.refresh_token = refresh_token;
-    //   delete req.user.exp;
-    //   delete req.user.iat;
+      delete req.user.exp;
+      delete req.user.iat;
     });
     next();
   } catch (error) {

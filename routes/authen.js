@@ -118,7 +118,6 @@ router.post("/Login", async (req, res) => {
 //api/Authen/Refresh
 router.post("/Refresh", jwtRefreshTokenValidate, async (req, res) => {
   try {
-    console.log(req);
     const cus_id = await authentication.findOne({
       customer_id: req.user.sub,
     });
@@ -132,6 +131,12 @@ router.post("/Refresh", jwtRefreshTokenValidate, async (req, res) => {
       ) {
         const token = jwtGenerateToken(cus_id.customer_id, {});
         const refresh_token = jwtGenerateRefreshToken(cus_id.customer_id, {});
+        await refreshTokenLog.findOneAndUpdate(
+          { customer_id: cus_id.customer_id },
+          {
+            refresh_token: refresh_token,
+          }
+        );
         res.status(200).json({
           status: "success",
           data: {
@@ -139,10 +144,12 @@ router.post("/Refresh", jwtRefreshTokenValidate, async (req, res) => {
             refresh_token: refresh_token,
           },
         });
+      } else {
+        res.sendStatus(500);
       }
+    } else {
       res.sendStatus(500);
     }
-    res.sendStatus(500);
   } catch (err) {
     res.status(500).json({ message: err });
   }

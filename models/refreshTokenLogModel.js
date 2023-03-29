@@ -11,6 +11,10 @@ const refreshTokenLogSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    update_date: {
+      type: Date,
+      default: new Date(),
+    },
   },
   {
     versionKey: false,
