@@ -23,7 +23,7 @@ router.get("/Customerlist", jwtTokenValidate, async (req, res) => {
       };
       customer_res.push(data);
     });
-    res.status(200).json({ status: "success", data: customer_res });
+    res.status(200).json({ status: "success", data: customer_res, error: "" });
   } catch (err) {
     res.status(405).json({ message: err });
   }
