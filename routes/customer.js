@@ -10,7 +10,7 @@ const { jwtTokenValidate } = require("../helper/jwt");
 // api/Customer/Customerlist
 router.get("/Customerlist", jwtTokenValidate, async (req, res) => {
   try {
-    const customer = await customerInfo.find();
+    const customer = await customerInfo.find().select("-customer_id");
     let customer_res = [];
     customer.forEach((o) => {
       let data = {
