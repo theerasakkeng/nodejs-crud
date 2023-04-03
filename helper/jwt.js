@@ -10,7 +10,6 @@ const jwtTokenValidate = (req, res, next) => {
     const token = req.headers["authorization"].replace("Bearer ", "");
 
     jwt.verify(token, ACCESS_TOKEN_SECRET, (err, decoded) => {
-      console.log(err);
       if (err) throw new Error(error);
     });
     next();
