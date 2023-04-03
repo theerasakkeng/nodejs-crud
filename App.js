@@ -20,7 +20,7 @@ require("dotenv").config();
 const { DB_CONNECTION_URL, PORT } = process.env;
 
 app.get("/", (req, res) => {
-  res.send("welcome");
+  res.send(DB_CONNECTION_URL);
 });
 
 //Routes customer
