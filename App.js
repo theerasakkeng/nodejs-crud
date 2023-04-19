@@ -6,7 +6,7 @@ const app = express();
 
 app.use(bodyParser.json());
 app.use(function (req, res, next) {
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:5173");
+  res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
     "Access-Control-Allow-Methods",
     "GET, POST, OPTIONS, PUT, PATCH, DELETE"
@@ -30,6 +30,10 @@ app.use("/api/Customer", customerRoute);
 //Routes authen
 const authenRoute = require("./routes/authen");
 app.use("/api/Authen", authenRoute);
+
+//Routes black office authen
+const authenBlackOfficeRoute = require("./routes/black-office/admin_authen")
+app.use("/api/black-office/authen", authenBlackOfficeRoute);
 
 mongoose.set("strictQuery", true);
 mongoose.connect(DB_CONNECTION_URL, { useNewUrlParser: true }, async () => {

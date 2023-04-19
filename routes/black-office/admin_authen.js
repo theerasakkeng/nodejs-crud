@@ -1,63 +1,45 @@
 const express = require("express");
 const moment = require("moment");
-const jwt = require("jsonwebtoken");
 const router = express.Router();
-const customerInfo = require("../models/customerModel");
-const authentication = require("../models/authenticationModel");
-const refreshTokenLog = require("../models/refreshTokenLogModel");
+const authenticationAdmin = require("../../models/black-office/authenticationAdminModel");
+const refreshTokenAdminLog = require("../../models/black-office/refreshTokenAdminLogModel");
 
 const {
   generateID,
   generateSalt,
   encryptPassword,
-  generateTransactionRef,
-} = require("../helper/utility");
+} = require("../../helper/utility");
 
 const {
   jwtRefreshTokenValidate,
   jwtGenerateToken,
   jwtGenerateRefreshToken,
-} = require("../helper/jwt");
+} = require("../../helper/jwt");
 
-// api/Authen/Register
+// api/black-office/Authen/Register
 router.post("/Register", async (req, res) => {
   let salt_key = generateSalt();
   let cus_id = generateID();
-  const authen = new authentication({
-    customer_id: cus_id,
+  const authen = new authenticationAdmin({
+    admin_id: cus_id,
+    role: req.body.role,
     salt: salt_key,
     user_name: req.body.user_name,
     password: encryptPassword(req.body.password, salt_key),
-  });
-  const customer = new customerInfo({
-    customer_id: cus_id,
-    first_name: req.body.first_name,
-    last_name: req.body.last_name,
-    email: req.body.email,
-    mobile_no: "",
-    address: {
-      address_info: "",
-      sub_district: "",
-      district: "",
-      province: "",
-      post_code: "",
-    },
     created_date: moment().format(),
-    update_date: moment().format(),
   });
   try {
     await authen.save();
-    await customer.save();
     res.status(200).json({ status: "success", data: "register sucess" });
   } catch (error) {
     res.status(405).json({ message: error });
   }
 });
 
-// api/Authen/Getsalt
+// api/black-office/Authen/Getsalt
 router.get("/Getsalt", async (req, res) => {
   try {
-    const salt = await authentication.findOne({
+    const salt = await authenticationAdmin.findOne({
       user_name: req.query.user_name,
     });
     let salt_res = {
@@ -69,31 +51,31 @@ router.get("/Getsalt", async (req, res) => {
   }
 });
 
-// api/Authen/Login
+// api/black-office/Authen/Login
 router.post("/Login", async (req, res) => {
   try {
-    const authen_data = await authentication.findOne({
+    const authen_data = await authenticationAdmin.findOne({
       user_name: req.body.user_name,
     });
     if (authen_data) {
       if (authen_data.password === req.body.password) {
-        const cus_id = authen_data.customer_id;
-        const token = jwtGenerateToken(cus_id, {}, "1d");
+        const cus_id = authen_data.admin_id;
+        const token = jwtGenerateToken(cus_id, {role:authen_data.role},"1d");
         const refresh_token = jwtGenerateRefreshToken(cus_id, {});
-        const refreshtoken_log = await refreshTokenLog.findOne({
-          customer_id: cus_id,
+        const refreshtoken_log = await refreshTokenAdminLog.findOne({
+          admin_id: cus_id,
         });
         if (refreshtoken_log) {
-          await refreshTokenLog.findOneAndUpdate(
-            { customer_id: cus_id },
+          await refreshTokenAdminLog.findOneAndUpdate(
+            { admin_id: cus_id },
             {
               refresh_token: refresh_token,
               update_date: new Date(),
             }
           );
         } else {
-          const refreshtoken_log_insert = new refreshTokenLog({
-            customer_id: cus_id,
+          const refreshtoken_log_insert = new refreshTokenAdminLog({
+            admin_id: cus_id,
             refresh_token: refresh_token,
             update_date: new Date(),
           });
@@ -117,24 +99,24 @@ router.post("/Login", async (req, res) => {
   }
 });
 
-//api/Authen/Refresh
+//api/black-office/Authen/Refresh
 router.post("/Refresh", jwtRefreshTokenValidate, async (req, res) => {
   try {
-    const cus_id = await authentication.findOne({
-      customer_id: req.user.sub,
+    const cus_id = await authenticationAdmin.findOne({
+      admin_id: req.user.sub,
     });
-    const refresh_token = await refreshTokenLog.findOne({
-      customer_id: req.user.sub,
+    const refresh_token = await refreshTokenAdminLog.findOne({
+        admin_id: req.user.sub,
     });
     if (cus_id && refresh_token) {
       if (
-        cus_id.customer_id === req.user.sub &&
+        cus_id.admin_id === req.user.sub &&
         refresh_token.refresh_token === req.user.refresh_token
       ) {
-        const token = jwtGenerateToken(cus_id.customer_id, {}, "1d");
-        const refresh_token = jwtGenerateRefreshToken(cus_id.customer_id, {});
-        await refreshTokenLog.findOneAndUpdate(
-          { customer_id: cus_id.customer_id },
+        const token = jwtGenerateToken(cus_id.admin_id, {},"1d");
+        const refresh_token = jwtGenerateRefreshToken(cus_id.admin_id, {});
+        await refreshTokenAdminLog.findOneAndUpdate(
+          { admin_id: cus_id.admin_id },
           {
             refresh_token: refresh_token,
           }

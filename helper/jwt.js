@@ -36,9 +36,9 @@ const jwtRefreshTokenValidate = (req, res, next) => {
   }
 };
 
-const jwtGenerateToken = (sub, payload) => {
+const jwtGenerateToken = (sub, payload,exp) => {
   const accessToken = jwt.sign({ sub: sub, payload }, ACCESS_TOKEN_SECRET, {
-    expiresIn: "1d",
+    expiresIn: exp,
     algorithm: "HS512",
   });
 
