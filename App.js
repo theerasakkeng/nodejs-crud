@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const app = express();
 
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(function (req, res, next) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
@@ -32,8 +33,12 @@ const authenRoute = require("./routes/authen");
 app.use("/api/Authen", authenRoute);
 
 //Routes black office authen
-const authenBlackOfficeRoute = require("./routes/black-office/admin_authen")
+const authenBlackOfficeRoute = require("./routes/black-office/admin-authen");
 app.use("/api/black-office/authen", authenBlackOfficeRoute);
+
+//Routes black office uploadimage
+const uploadImageRoute = require("./routes/black-office/upload-image");
+app.use("/api/black-office", uploadImageRoute);
 
 mongoose.set("strictQuery", true);
 mongoose.connect(DB_CONNECTION_URL, { useNewUrlParser: true }, async () => {
