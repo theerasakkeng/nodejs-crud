@@ -4,25 +4,26 @@ const FormData = require("form-data");
 require("dotenv").config();
 const { UPLOAD_KEY } = process.env;
 
-const uploadImage = async (image) => {
+const uploadImage = async (image, name, type) => {
+  let response = null;
   try {
-    console.log(image);
     const formData = new FormData();
-    formData.append("image", image);
-    let response = await axios.post(
+    formData.append("image", image, {
+      filename: name,
+      contentType: type,
+    });
+    let res = await axios.post(
       `https://api.imgbb.com/1/upload?key=${UPLOAD_KEY}`,
       formData,
       {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
+        headers: formData.getHeaders(),
       }
     );
-    console.log(response);
+    response = res;
   } catch (error) {
     console.log(error);
   }
-  return "5555";
+  return response;
 };
 
 module.exports = {
